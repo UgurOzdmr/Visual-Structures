@@ -18,15 +18,13 @@ export class HomeComponent implements OnInit {
   status = '';
   delay = 1;
 
-  private multiplyForHeight = 3.4;
   array;
 
-  quantity = 50;
+  quantity = 20;
 
   private x: any;
   private y: any;
   private svg: any;
-  private g: any;
 
 
   constructor() { }
@@ -42,15 +40,23 @@ export class HomeComponent implements OnInit {
 
 
   async insert() {
-    if (this.array[this.index]) {
+    if(this.command === 'delete') {
+
+      d3.selectAll('#index' + (this.index) + '')
+      .transition()
+      .style('fill', '#435591');
+    }
+    if (this.array[this.index] && this.value) {
     this.array.push(0);
 
     d3.selectAll('svg > *').remove();
     this.createSvg();
 
     this.command = 'insert';
+    
+    await this.pushItems(this.array.length - 2, this.array.length - 1);
 
-    for (let i = this.array.length - 2; i >= this.index; i--) {
+    for (let i = this.array.length - 2 ; i >= this.index; i--) {
         this.array[i + 1] = this.array[i];
         await this.pushItems(i - 1, i);
       }
@@ -61,7 +67,7 @@ export class HomeComponent implements OnInit {
     this.createSvg();
     this.status =  this.value + ' has added into the array at index ' + this.index + '.Time complexity is 0(n).Because we have to shift all the indexes one to right after' + this.index + '.(Worst Case)';
     } else {
-      this.status = 'There is no index like you entered.';
+      this.status = 'You have to provide a value and valid index for insertion.';
     }
   }
 
@@ -82,17 +88,50 @@ export class HomeComponent implements OnInit {
 
 
   delete() {
+    if (this.command === 'push') {
+      d3.selectAll('#index' + (this.array.length - 1) + '')
+      .transition()
+      .style('fill', '#435591');
+    }
+
+    if (this.command === 'insert') {
+      d3.selectAll('rect')
+      .transition()
+      .style('fill', '#435591');
+    }
+
     this.command = 'delete';
     if (this.array[this.index]) {
       const item = this.array[this.index];
       this.shiftItems(this.index);
-      this.status = item + 'has deleted from the array.Time complexity is O(n).Because we have to shift all the indexes one to left after'
+      this.status = item + ' has deleted from the array at index ' + this.index + '.Time complexity is O(n).Because we have to shift all the indexes one to left after '
       + this.index + '.' + '(Worst Case)';
 
     }
     else  {
       this.status = 'There is no element to delete at the index';
   }
+}
+
+
+
+async shiftItems(index) {
+  let count = 0;
+  for (let i = index; i < this.array.length - 1; i++) {
+      this.array[i] = this.array[i + 1];
+      await this.swapItems(this.index , i + 1, count++);
+    }
+
+
+  // tslint:disable-next-line: no-unused-expression
+  new Promise(resolve => {
+  setTimeout(() => {
+    d3.selectAll('svg > *').remove();
+    this.createSvg();
+  }, 300);
+  this.array.pop();
+});
+
 }
 
 swapItems(el1, el2, count) {
@@ -118,24 +157,6 @@ swapItems(el1, el2, count) {
 }
 
 
-
-  async shiftItems(index) {
-        let count = 0;
-        for (let i = index; i < this.array.length - 1; i++) {
-            this.array[i] = this.array[i + 1];
-            await this.swapItems(this.index , i + 1, count++);
-          }
-
-
-        await new Promise(resolve => {
-        setTimeout(() => {
-          d3.selectAll('svg > *').remove();
-          this.createSvg();
-        }, 1000);
-        this.array.pop();
-      });
-
-    }
 
   createArray() {
     this.command = 'create';
@@ -204,25 +225,79 @@ swapItems(el1, el2, count) {
     }, this.delay);
   }
 
-  private addRect(array) {
-      console.log(this.addRect);
-      let color = 'blue';
+  private initiateX(array) {
+
+    const tempArr = [];
+    for (let i = 0; i < array.length; i++) {
+      tempArr.push('' + i + '');
+    }
+    // X axis
+    this.x = d3.scaleBand()
+    .domain(tempArr.map(d => d))
+    .range([0, this.width]);
+    this.svg
+    .append('g')
+    .attr('transform', 'translate(0,' + this.height + ')')
+    .call(d3.axisBottom(this.x));
+
+    // X Label
+    this.svg.append('text')
+    .attr('text-anchor', 'end')
+    .attr('x', this.width)
+    .attr('y', this.height + this.margin.top + 20)
+    .text('Indexes');
+
+    this.initiateY(this.array);
+
+    }
+
+    private initiateY(array) {
+      this.max = array[0];
+      this.min = array[0];
+
       for (let i = 0; i < array.length; i++) {
-      color = 'blue';
+        if (array[i] > this.max ) {
+          this.max = array[i];
+
+        }
+        if (array[i] < this.min) {
+        this.min = array[i];
+        }
+
+      }
+
+      this.y = d3.scaleLinear().domain([this.min, this.max]).range([this.height, 0]);
+      this.svg.append('g')
+      .call(d3.axisLeft(this.y));
+
+      this.svg.append('text')
+      .attr('text-anchor', 'end')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', -this.margin.left + 20)
+      .attr('x', -this.margin.top)
+      .text('Values');
+      this.addRect(this.array);
+    }
+
+  private addRect(array) {
+      let color = '#435591';
+      let height;
+      for (let i = 0; i < array.length; i++) {
+      height =  340 - this.y(array[i]);
+
+      color = '#435591';
       // tslint:disable-next-line: one-variable-per-declaration
-
-      let tempHeight = this.calculateHeight(array[i]);
-
-
-      if (array[i] === this.max) { tempHeight = 340; }
 
       if (this.command === 'push' && this.array.length - 1 === i) {
         color = '#d70000';
       }
 
       else if (this.command === 'insert' && this.index === i) {
-        console.log('Index' + this.index + 'i' + i);
         color = '#d70000';
+      }
+
+      if (this.array[i] === this.min) {
+        height = 5;
       }
 
       this.svg
@@ -230,7 +305,7 @@ swapItems(el1, el2, count) {
       .attr('id', 'index' + i + '')
       .attr('x', this.x('' + i + '') )
       .attr('y', this.y(array[i]))
-      .attr('height', tempHeight)
+      .attr('height', height )
       .attr('width', this.x.bandwidth() )
       .style('fill', color)
       .style('opacity', 0.5);
@@ -239,72 +314,4 @@ swapItems(el1, el2, count) {
 
   }
 
-  calculateHeight(value) {
-    let tempHeight, multiplier;
-    const gap = this.max - this.min ;
-
-    multiplier = (100 / gap);
-    tempHeight = (multiplier * value * this.multiplyForHeight);
-
-    return tempHeight;
-  }
-
-  private initiateX(array) {
-
-  const tempArr = [];
-  for (let i = 0; i < array.length; i++) {
-    tempArr.push('' + i + '');
-  }
-
-  // X axis
-  this.x = d3.scaleBand()
-  .domain(tempArr.map(d => d))
-  .range([0, this.width]);
-
-  this.svg
-  .append('g')
-  .attr('transform', 'translate(0,' + this.height + ')')
-  .call(d3.axisBottom(this.x));
-
-  // X Label
-  this.svg.append('text')
-  .attr('text-anchor', 'end')
-  .attr('x', this.width)
-  .attr('y', this.height + this.margin.top + 20)
-  .text('Indexes');
-
-  this.initiateY(this.array);
-
-  }
-
-  private initiateY(array) {
-    this.max = array[0];
-    this.min = array[0];
-
-    for (let i = 0; i < array.length; i++) {
-      if (array[i] > this.max ) {
-        this.max = array[i];
-
-      }
-      if (array[i] < this.min) {
-      this.min = array[i];
-      }
-
-    }
-
-    this.y = d3.scaleLinear().domain([this.min, this.max]).range([this.height, 0]);
-    this.svg.append('g')
-    .call(d3.axisLeft(this.y));
-
-
-    this.svg.append('text')
-    .attr('text-anchor', 'end')
-    .attr('transform', 'rotate(-90)')
-    .attr('y', -this.margin.left + 20)
-    .attr('x', -this.margin.top)
-    .text('Values');
-
-    this.addRect(this.array);
-
-  }
 }
