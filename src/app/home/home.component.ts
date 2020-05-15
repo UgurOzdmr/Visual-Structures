@@ -40,12 +40,8 @@ export class HomeComponent implements OnInit {
 
 
   async insert() {
-    if(this.command === 'delete') {
-
-      d3.selectAll('#index' + (this.index) + '')
-      .transition()
-      .style('fill', '#435591');
-    }
+    this.clear();
+    
     if (this.array[this.index] && this.value) {
     this.array.push(0);
 
@@ -53,18 +49,29 @@ export class HomeComponent implements OnInit {
     this.createSvg();
 
     this.command = 'insert';
-    
+
     await this.pushItems(this.array.length - 2, this.array.length - 1);
 
-    for (let i = this.array.length - 2 ; i >= this.index; i--) {
+    for (let i = this.array.length - 2 ; i > this.index; i--) {
         this.array[i + 1] = this.array[i];
         await this.pushItems(i - 1, i);
       }
 
     this.array[this.index] = this.value;
-    d3.selectAll('svg > *').remove();
 
-    this.createSvg();
+    this.svg
+    .append('rect')
+    .transition()
+    .delay(200)
+    .attr('id', 'index' + this.index + '')
+    .attr('x', this.x('' + this.index + '') )
+    .attr('y', this.y(this.array[this.index]))
+    .attr('height', 340 - this.y(this.array[this.index]) )
+    .attr('width', this.x.bandwidth() )
+    .style('fill', 'red')
+    .style('opacity', 0.5);
+
+  
     this.status =  this.value + ' has added into the array at index ' + this.index + '.Time complexity is 0(n).Because we have to shift all the indexes one to right after' + this.index + '.(Worst Case)';
     } else {
       this.status = 'You have to provide a value and valid index for insertion.';
@@ -86,19 +93,27 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  lookUp() {
+    this.clear();
+    this.status = this.array[this.index] + ' is the value of the array at index of ' + this.index + '. Time complexity is O(1).Because We have the ability to access any specific index of the array instantly.';
+    this.changeColor(this.index);
+  }
+
+  clear() {
+    d3.selectAll('rect')
+    .transition()
+    .style('fill', '#435591');
+  }
+
+  changeColor(el) {
+    d3.selectAll('#index' + el + '')
+    .transition()
+    .style('fill', 'red');
+  }
+
 
   delete() {
-    if (this.command === 'push') {
-      d3.selectAll('#index' + (this.array.length - 1) + '')
-      .transition()
-      .style('fill', '#435591');
-    }
-
-    if (this.command === 'insert') {
-      d3.selectAll('rect')
-      .transition()
-      .style('fill', '#435591');
-    }
+    this.clear();
 
     this.command = 'delete';
     if (this.array[this.index]) {
@@ -128,8 +143,9 @@ async shiftItems(index) {
   setTimeout(() => {
     d3.selectAll('svg > *').remove();
     this.createSvg();
-  }, 300);
+  }, 400);
   this.array.pop();
+  resolve();
 });
 
 }
@@ -143,7 +159,6 @@ swapItems(el1, el2, count) {
         .transition()
         .attr('x', this.x('' + el2 + '') )
         .attr('id', 'index' + (el2) + '')
-        .style('fill', 'green');
 
       d3.selectAll('#index' + el2 + '')
         .style('fill', 'red')
@@ -172,6 +187,7 @@ swapItems(el1, el2, count) {
   }
 
   pushArray() {
+    this.clear();
     this.delay = 1;
     this.command = 'push';
     if (this.value) {
@@ -186,6 +202,7 @@ swapItems(el1, el2, count) {
 
 
   popArray() {
+    this.clear();
     this.command = 'pop';
     if (this.array.length === 0) {
       this.status = 'There is no element in the array to pop';
