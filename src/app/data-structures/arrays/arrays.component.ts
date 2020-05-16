@@ -8,7 +8,7 @@ import * as d3 from 'd3';
 })
 export class ArraysComponent implements OnInit {
 
-  margin = { top: 20, right: 40, bottom: 40, left: 120 };
+  margin;
   width;
   height;
   value;
@@ -34,6 +34,7 @@ export class ArraysComponent implements OnInit {
   ngOnInit() {
     this.innerWidth = window.innerWidth;
     console.log(this.innerWidth);
+    this.margin = { top: 20, right: (this.innerWidth / 20), bottom: 40, left: (this.innerWidth / 10) };
     this.width = (innerWidth / 1.2) - this.margin.left - this.margin.right;
     this.height = 400 - this.margin.top - this.margin.bottom;
     this.createArray();

@@ -14,13 +14,15 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ArraysComponent } from './data-structures/arrays/arrays.component';
+import { SortingAlgorithmsComponent } from './sorting-algorithms/sorting-algorithms.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     NavbarComponent,
-    ArraysComponent
+    ArraysComponent,
+    SortingAlgorithmsComponent
   ],
   imports: [
     BrowserModule,
