@@ -43,7 +43,7 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
     this.isWorking = false;
   }
 
- 
+
   stop() {
     this.isWorking = false;
     this.counter = 0;
@@ -56,44 +56,80 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
     this.status = 'Bubble sort is running';
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < arr.length; i++) {
-      if(this.isWorking === true) {
+      if (this.isWorking === true) {
       for (let j = 0; j < arr.length - i ; j++) {
-        if(this.isWorking === true) {
+        if (this.isWorking === true) {
 
           this.counter++;
           if (arr[j] > arr[j + 1]) {
-            await this.swap(j, j + 1);
+            await this.swap(j, j + 1,this.color, this.color);
             const temp = arr[j];
             arr[j] = arr[j + 1];
             arr[j + 1] = temp;
           }
-        } else break;
+        } else { break; }
       }
       this.changeColor(arr.length - i - 1, 'green');
-      } else break;
+      } else { break; }
       }
     this.isWorking = false;
     }
 
 
-  async insertSort(arr) {
+  async selectionSort(arr) {
+    this.counter = 0;
+    this.isWorking = true;
+    this.status = 'Selection sort is running';
+    const length = this.array.length;
 
+    for (let i = 0; i < length; i++) {
+      if (this.isWorking === true) {
+        let minIndex = i;
+        let tempMin = arr[i];
+        for(let j = i + 1; j < arr.length; j++) {
+          if(this.isWorking === true) {
+          this.counter++;
+          await this.changeColor(j, 'red');
+
+          if (arr[j] < tempMin) {
+            await this.changeColor(minIndex, this.color);
+            minIndex = j;
+            tempMin = arr[j];
+            await this.changeColor(j, 'yellow');
+          } 
+          else {
+            await this.changeColor(j, this.color);
+          }
+        } 
+        else { break; }
+        }
+
+        let temp = arr[i];
+        arr[i] = arr[minIndex];
+        arr[minIndex] = temp;
+        await this.swap(i, minIndex, this.color, 'green');
+      } else { break; }
   }
-  
+
+    this.isWorking = false;
+}
+
   changeColor(el, color) {
+    console.log(el);
     return new Promise(resolve => {
       setTimeout(() => {
         d3.selectAll('#index' + el + '')
         .style('fill', color);
-      }, 300);
-    })
-    
+        resolve();
+      }, 50);
+    });
+
   }
 
-  swap(el1, el2) {
-    return new Promise((resolve,reject) => {
+  swap(el1, el2, color1, color2) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if(this.isWorking === false) {
+        if (this.isWorking === false) {
           reject();
         }
         else {
@@ -102,14 +138,14 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
         .transition()
         .attr('x', this.x('' + el2 + '') )
         .attr('id', 'index' + (el2) + '')
-        .style('fill', this.color);
+        .style('fill', color1);
 
         d3.selectAll('#index' + el2 + '')
         .style('fill', 'red')
         .transition()
         .attr('x', this.x('' + el1 + '') )
         .attr('id', 'index' + (el1) + '')
-        .style('fill', this.color);
+        .style('fill', color2);
         resolve();
         }
       }, 300);

@@ -19,8 +19,8 @@
             <h5 class="ml-3">{{status}} <button class="btn btn-primary ml-3" [hidden]="!isWorking" (click)="stop()" [disabled]="!isWorking">Stop</button></h5>
 
             <button class="btn btn-primary ml-3 mt-3" (click)="bubbleSort(this.array)" [disabled]="isWorking">Bubble Sort</button>
-            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Insert Sort</button>
-            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Selected Sort</button>
+            <button class="btn btn-primary ml-3 mt-3"  (click)="selectionSort(this.array)" [disabled]="isWorking">Selection Sort</button>
+            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Insertion Sort</button>
             <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Merge Sort</button>
             <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Quick Sort</button>
             <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Heap Sort</button>
