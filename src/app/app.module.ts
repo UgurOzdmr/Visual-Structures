@@ -15,6 +15,7 @@ import { HomeComponent } from './home/home.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { ArraysComponent } from './data-structures/arrays/arrays.component';
 import { SortingAlgorithmsComponent } from './sorting-algorithms/sorting-algorithms.component';
+import { HashTablesComponent } from './data-structures/hash-tables/hash-tables.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SortingAlgorithmsComponent } from './sorting-algorithms/sorting-algorit
     HomeComponent,
     NavbarComponent,
     ArraysComponent,
-    SortingAlgorithmsComponent
+    SortingAlgorithmsComponent,
+    HashTablesComponent
   ],
   imports: [
     BrowserModule,

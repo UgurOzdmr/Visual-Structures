@@ -7,10 +7,12 @@ import * as d3 from 'd3';
   templateUrl: './sorting-algorithms.component.html',
   styleUrls: ['./sorting-algorithms.component.css']
 })
-export class SortingAlgorithmsComponent implements OnInit {
+export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
 
   color = '#435591';
+  isWorking = false;
   array;
+  legacyArr;
   margin;
   height;
   width = 1000;
@@ -19,6 +21,7 @@ export class SortingAlgorithmsComponent implements OnInit {
   max = 100;
   quantity = 50;
   innerWidth;
+  status;
 
   private x: any;
   private y: any;
@@ -36,12 +39,27 @@ export class SortingAlgorithmsComponent implements OnInit {
     this.createSvg(this.array);
   }
 
+  ngOnDestroy() {
+    this.isWorking = false;
+  }
+
  
+  stop() {
+    this.isWorking = false;
+    this.counter = 0;
+    this.status = '';
+  }
 
   async bubbleSort(arr) {
+    this.counter = 0;
+    this.isWorking = true;
+    this.status = 'Bubble sort is running';
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < arr.length; i++) {
+      if(this.isWorking === true) {
       for (let j = 0; j < arr.length - i ; j++) {
+        if(this.isWorking === true) {
+
           this.counter++;
           if (arr[j] > arr[j + 1]) {
             await this.swap(j, j + 1);
@@ -49,15 +67,19 @@ export class SortingAlgorithmsComponent implements OnInit {
             arr[j] = arr[j + 1];
             arr[j + 1] = temp;
           }
-        }
-      this.changeColor(arr.length - i - 1, 'green');
+        } else break;
       }
+      this.changeColor(arr.length - i - 1, 'green');
+      } else break;
+      }
+    this.isWorking = false;
     }
 
 
   async insertSort(arr) {
 
   }
+  
   changeColor(el, color) {
     return new Promise(resolve => {
       setTimeout(() => {
@@ -69,8 +91,12 @@ export class SortingAlgorithmsComponent implements OnInit {
   }
 
   swap(el1, el2) {
-    return new Promise(resolve => {
+    return new Promise((resolve,reject) => {
       setTimeout(() => {
+        if(this.isWorking === false) {
+          reject();
+        }
+        else {
         d3.selectAll('#index' + el1 + '')
         .style('fill', 'red')
         .transition()
@@ -85,12 +111,13 @@ export class SortingAlgorithmsComponent implements OnInit {
         .attr('id', 'index' + (el1) + '')
         .style('fill', this.color);
         resolve();
+        }
       }, 300);
     });
   }
 
   clear() {
-    d3.selectAll('svg > *').remove();
+    d3.selectAll('#sort > *').remove();
   }
 
   createSvg(array) {
@@ -98,7 +125,7 @@ export class SortingAlgorithmsComponent implements OnInit {
   }
 
   private initiateSvg(array) {
-      this.svg = d3.select('svg')
+      this.svg = d3.select('#sort')
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
@@ -166,6 +193,7 @@ findMaxMin(array) {
 }
 
   createArray(n, max, min, isExists) {
+    this.stop();
     if (n < 20)  {
       n = 20;
       this.quantity = 20;
@@ -191,8 +219,10 @@ findMaxMin(array) {
     if (!isExists) {
       this.clear();
       this.array = arr;
+      this.legacyArr = arr;
     } else {
       this.array = arr;
+      this.legacyArr = arr;
       this.clear();
       this.createSvg(arr);
     }

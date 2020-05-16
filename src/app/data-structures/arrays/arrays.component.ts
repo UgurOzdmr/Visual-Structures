@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -6,7 +6,7 @@ import * as d3 from 'd3';
   templateUrl: './arrays.component.html',
   styleUrls: ['./arrays.component.css']
 })
-export class ArraysComponent implements OnInit {
+export class ArraysComponent implements OnInit, OnDestroy {
 
   margin;
   width;
@@ -41,6 +41,11 @@ export class ArraysComponent implements OnInit {
     this.createSvg();
   }
 
+  ngOnDestroy() {
+    this.clear();
+    this.isWorking = false;
+  }
+
   createSvg() {
     this.initiateSvg();
   }
@@ -52,7 +57,7 @@ export class ArraysComponent implements OnInit {
     this.isWorking = true;
     this.array.push(0);
 
-    d3.selectAll('svg > *').remove();
+    d3.selectAll('#array > *').remove();
     this.createSvg();
 
     this.command = 'insert';
@@ -60,8 +65,10 @@ export class ArraysComponent implements OnInit {
     await this.pushItems(this.array.length - 2, this.array.length - 1);
 
     for (let i = this.array.length - 2 ; i > this.index; i--) {
+       if(this.isWorking === true) {
         this.array[i + 1] = this.array[i];
         await this.pushItems(i - 1, i);
+       } else break;
       }
 
     this.array[this.index] = this.value;
@@ -151,15 +158,17 @@ export class ArraysComponent implements OnInit {
 async shiftItems(index) {
   let count = 0;
   for (let i = index; i < this.array.length - 1; i++) {
+      if(this.isWorking === true) {
       this.array[i] = this.array[i + 1];
       await this.swapItems(this.index , i + 1, count++);
+      } else break;
     }
 
 
   // tslint:disable-next-line: no-unused-expression
   new Promise(resolve => {
   setTimeout(() => {
-    d3.selectAll('svg > *').remove();
+    d3.selectAll('#array > *').remove();
     this.createSvg();
   }, 400);
   this.array.pop();
@@ -204,7 +213,7 @@ swapItems(el1, el2, count) {
     }
 
     this.array = newArray;
-    d3.selectAll('svg > *').remove();
+    d3.selectAll('#array > *').remove();
 
     this.createSvg();
   }
@@ -216,7 +225,7 @@ swapItems(el1, el2, count) {
       this.array.push(this.value);
 
 
-      d3.selectAll('svg > *').remove();
+      d3.selectAll('#array > *').remove();
       this.createSvg();
 
       this.status = this.value + ' has just pushed into the array.Time complexity: O(1).Because we only add one value to the end of the array.';
@@ -248,7 +257,7 @@ swapItems(el1, el2, count) {
 
 
     setTimeout(() => {
-      d3.selectAll('svg > *').remove();
+      d3.selectAll('#array > *').remove();
     }, 1200);
 
     this.createSvg();
@@ -259,7 +268,7 @@ swapItems(el1, el2, count) {
 
   private initiateSvg() {
     setTimeout(() => {
-      this.svg = d3.select('svg')
+      this.svg = d3.select('#array')
       .append('svg')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)

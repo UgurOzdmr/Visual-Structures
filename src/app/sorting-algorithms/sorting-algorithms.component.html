@@ -16,12 +16,14 @@
             <button (click)="createArray(this.quantity,this.max,this.min,true)" class="btn btn-primary ml-3 mt-3 ">Create</button>
         </div>
         <div class="col-6 mt-5">
-            <button class="btn btn-primary ml-3 mt-3" (click)="bubbleSort(this.array)">Bubble Sort</button>
-            <button class="btn btn-primary ml-3 mt-3">Insert Sort</button>
-            <button class="btn btn-primary ml-3 mt-3">Selected Sort</button>
-            <button class="btn btn-primary ml-3 mt-3">Merge Sort</button>
-            <button class="btn btn-primary ml-3 mt-3">Quick Sort</button>
-            <button class="btn btn-primary ml-3 mt-3">Heap Sort</button>
+            <h5 class="ml-3">{{status}} <button class="btn btn-primary ml-3" [hidden]="!isWorking" (click)="stop()" [disabled]="!isWorking">Stop</button></h5>
+
+            <button class="btn btn-primary ml-3 mt-3" (click)="bubbleSort(this.array)" [disabled]="isWorking">Bubble Sort</button>
+            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Insert Sort</button>
+            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Selected Sort</button>
+            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Merge Sort</button>
+            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Quick Sort</button>
+            <button class="btn btn-primary ml-3 mt-3"  [disabled]="isWorking">Heap Sort</button>
         </div>
     </div>
     <br>
@@ -30,6 +32,6 @@
             <h5>Step Counter:<span><strong>{{counter}}</strong></span></h5>
         </div>
     </div>
-    <svg  class="mb-5" width="this.width" height="500"></svg><br>
+    <svg id="sort" class="mb-5" width="this.width" height="500"></svg><br>
 
 </div>
