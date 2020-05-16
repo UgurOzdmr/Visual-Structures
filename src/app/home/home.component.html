@@ -1,40 +1,6 @@
-<div class="container">
+<div class="container-fluid">
     <app-navbar></app-navbar>
-    <div class="row mt-5">
-    
-        <div class="col-6">
-            <h5>You can use value both push and insert functions</h5>
-            <label for="value">Value:</label>
-            <input type="number" class="ml-3" [(ngModel)]="this.value" id="value">
-            <button class="btn btn-primary ml-3" (click)="pushArray()">Push</button>
-            <button class="btn btn-primary ml-3" (click)="popArray()">Pop</button>
-            <br>
-            <label for="value">Index to </label>
-            <input type="number" class="ml-3 mt-3" [(ngModel)]="this.index" id="index">
-            <button class="btn btn-primary ml-3" (click)="insert()">Insert</button>
-            <button class="btn btn-primary ml-3" (click)="delete()">Delete</button>
-            <button class="btn btn-primary ml-3" (click)="lookUp()">Look-up</button>
-
-        </div>
-        <div class="col-4 offset-2">
-            <h5>Create New Array</h5>
-            <label for="min">Min Value </label>
-            <input type="number" class="ml-3" [(ngModel)]="this.min" id="min">
-            <br>
-            <label for="max" >Max Value</label>
-            <input type="number" class="ml-3" [(ngModel)]="this.max" id="max">
-            <br>
-    
-            <label for="quantity">Quantity</label>
-            <input type="number" class="ml-3" [(ngModel)]="this.quantity" id="quantity">
-            <br>
-            <button (click)="createArray()" class="btn btn-primary ml-3">Create</button>
-    
-        </div>
-    </div>
-    <br>
-    <svg class="mt-5" width="960" height="500"></svg><br>
-    <h5>Status:{{status}}</h5>
-    
-    
-    </div>
+    <h5 class="mt-5">For now you can only use Array section to work on.
+        Click Data Structures and select Arrays
+    </h5>
+</div>
