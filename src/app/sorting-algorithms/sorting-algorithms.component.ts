@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 })
 export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
 
-  color = '#435591';
+  color = 'blue';
   isWorking = false;
   array;
   legacyArr;
@@ -51,6 +51,8 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
   }
 
   async bubbleSort(arr) {
+    this.clear();
+    this.createSvg(this.array);
     this.counter = 0;
     this.isWorking = true;
     this.status = 'Bubble sort is running';
@@ -62,14 +64,15 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
 
           this.counter++;
           if (arr[j] > arr[j + 1]) {
-            await this.swap(j, j + 1,this.color, this.color);
+            await this.swap(j, j + 1, this.color, this.color);
+            this.array = arr;
             const temp = arr[j];
             arr[j] = arr[j + 1];
             arr[j + 1] = temp;
           }
         } else { break; }
       }
-      this.changeColor(arr.length - i - 1, 'green');
+      await this.changeColor(arr.length - i - 1, 'green', 30);
       } else { break; }
       }
     this.isWorking = false;
@@ -77,51 +80,100 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
 
 
   async selectionSort(arr) {
+    this.clear();
+    this.createSvg(this.array);
     this.counter = 0;
     this.isWorking = true;
     this.status = 'Selection sort is running';
-    const length = this.array.length;
+    const length = arr.length;
 
     for (let i = 0; i < length; i++) {
       if (this.isWorking === true) {
         let minIndex = i;
         let tempMin = arr[i];
-        for(let j = i + 1; j < arr.length; j++) {
-          if(this.isWorking === true) {
+        for (let j = i + 1; j < length; j++) {
+          if (this.isWorking === true) {
           this.counter++;
-          await this.changeColor(j, 'red');
+          await this.changeColor(j, 'red', 10);
 
           if (arr[j] < tempMin) {
-            await this.changeColor(minIndex, this.color);
+            await this.changeColor(minIndex, this.color, 10);
             minIndex = j;
             tempMin = arr[j];
-            await this.changeColor(j, 'yellow');
-          } 
-          else {
-            await this.changeColor(j, this.color);
+            await this.changeColor(j, 'yellow', 10);
           }
-        } 
+          else {
+            await this.changeColor(j, this.color, 10);
+          }
+        }
         else { break; }
         }
 
-        let temp = arr[i];
+        const temp = arr[i];
         arr[i] = arr[minIndex];
         arr[minIndex] = temp;
         await this.swap(i, minIndex, this.color, 'green');
+        this.array = arr;
       } else { break; }
   }
 
     this.isWorking = false;
 }
 
-  changeColor(el, color) {
-    console.log(el);
+async insertion(arr) {
+  this.clear();
+  this.createSvg(this.array);
+  this.counter = 0;
+  this.isWorking = true;
+  this.status = 'Insertion sort is running';
+  const length = this.array.length;
+
+  for (let i = 0; i < length; i++) {
+      if (this.isWorking === true) {
+      if (arr[i] < arr[0]) { // If current element is smaller than first element, swap them
+        const first = arr[0];
+        arr[0] = arr[i];
+        arr[i] = first;
+        await this.swap(0, i, 'green', 'green');
+        this.array = arr;
+        i--;
+      } else {
+      for (let j = i; j > 0; j--) {
+        this.counter++;
+        if (this.isWorking) {
+        if (arr[j] < arr[j - 1]) {
+          const temp = arr[j];
+          arr[j] = arr[j - 1];
+          arr[j - 1] = temp;
+          await this.swap(j, j - 1, 'yellow', 'green');
+          this.array = arr;
+        } else {
+          await this.changeColor(j, 'green', 30);
+          break;
+        }
+        // tslint:disable-next-line: max-line-length
+        // If previous element is smaller than the current element,so since left of this current element is sorted already,there is no smaller element than current element
+      }
+      else { break; }
+    }
+  }
+  } else { break; }
+  }
+
+  this.isWorking = false;
+  this.array = arr;
+  console.log(arr);
+}
+
+  changeColor(el, color, delay) {
     return new Promise(resolve => {
       setTimeout(() => {
         d3.selectAll('#index' + el + '')
+        .transition()
+        .duration(0)
         .style('fill', color);
         resolve();
-      }, 50);
+      }, delay);
     });
 
   }
@@ -136,6 +188,7 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
         d3.selectAll('#index' + el1 + '')
         .style('fill', 'red')
         .transition()
+        .duration(0)
         .attr('x', this.x('' + el2 + '') )
         .attr('id', 'index' + (el2) + '')
         .style('fill', color1);
@@ -143,12 +196,13 @@ export class SortingAlgorithmsComponent implements OnInit , OnDestroy{
         d3.selectAll('#index' + el2 + '')
         .style('fill', 'red')
         .transition()
+        .duration(0)
         .attr('x', this.x('' + el1 + '') )
         .attr('id', 'index' + (el1) + '')
         .style('fill', color2);
         resolve();
         }
-      }, 300);
+      }, 50);
     });
   }
 
