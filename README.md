@@ -6,7 +6,7 @@ and understand deeply how they work and how i can manipulate them in order to vi
 
 
 ## Live server
-https://visual-structure-go.herokuapp.com/
+https://visual-structure-go.herokuapp.com/ (Sometimes there could be a little bit delay while you're trying to open the website, since i use free service for host.)
 
 # Explanation
 This website allows you to explore how data structures built and how you can implement certain,most popular algorithms on them.
